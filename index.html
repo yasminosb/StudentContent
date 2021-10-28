@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Student content</title>
+  <!-- <link rel="stylesheet" href="css/mystyles.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/jeezy@1.12.11/lib/jeezy.min.js"></script>
+  <script src="https://unpkg.com/data2grid@1.0.0/build/data2grid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.5/chroma.min.js"></script>
+  <script src="d3.v5.js" charset="utf-8"></script>
+  <script src="faculties.js" charset="utf-8"></script>
+  <script src="column_names.js" charset="utf-8"></script>
+  <script src="questions_separated.js" charset="utf-8"></script>
+  <script src="heatmap_axes.js" charset="utf-8"></script>
+  <script src="legend.js" charset="utf-8"></script>
+  <script src="numbertranslations.js" charset="utf-8"></script>
+  <script src="subquestion_translations.js" charset="utf-8"></script>
+  <script src="question_translations.js" charset="utf-8"></script>
+  <style>
+    .container + .container {
+      margin-top: 25px;
+    }
+
+    .button{
+      margin: 0.2em 0.2em 0.2em 0.2em;
+    }
+
+    @media screen and (min-width: 1280px) {
+      .container {
+        max-width: 960px;
+        width: 960px;
+      }
+    }
+
+    div#title{
+      position: relative;
+    }
+
+    div#title img{
+      position: absolute;
+      bottom: 0;
+    }
+
+    rect.selected {
+        stroke: #000;
+        stroke-width: 2px;
+      }
+
+      .interesting {
+        stroke: green;
+        stroke-width: 2px;
+      }
+
+      .axis .domain {
+        display: none;
+      }
+      .tip {
+        position: absolute;
+        font-size: 0.8em;
+        text-align: center;
+        text-shadow: -1px -1px 1px #ffffff, -1px 0px 1px #ffffff,
+          -1px 1px 1px #ffffff, 0px -1px 1px #ffffff, 0px 1px 1px #ffffff,
+          1px -1px 1px #ffffff, 1px 0px 1px #ffffff, 1px 1px 1px #ffffff;
+
+      }
+
+      .bartooltip{
+        position: absolute;
+
+        text-align: center;
+        text-shadow: -1px -1px 1px #ffffff, -1px 0px 1px #ffffff,
+          -1px 1px 1px #ffffff, 0px -1px 1px #ffffff, 0px 1px 1px #ffffff,
+          1px -1px 1px #ffffff, 1px 0px 1px #ffffff, 1px 1px 1px #ffffff;
+
+      }
+
+
+
+      #grid-legend, #grid {
+        margin-bottom: 10px;
+        justify-content: center;
+        align-content: center;
+        display:flex;
+      }
+      #grid-legend text {
+        font-size: 0.8em;
+      }
+
+      .stack{
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        margin: 0 auto;
+        width: 200px;
+      }
+
+      .group{
+        display: flex;
+        flex-direction: column-reverse;
+        margin: 0.5rem 0;
+        width: 45px;
+        align-items: center;
+      }
+
+      .block{
+        width: 20px;
+        order: 1;
+        margin-bottom: 0rem;
+      }
+
+      .label{
+        order: 0;
+        width: 50px;
+        text-align: center;
+      }
+
+      .count{
+        order: 2;
+      }
+
+      /* overwrite Bulma  */
+      .block:not(:last-child){
+        margin-bottom: 0;
+      }
+
+      .stack{
+        width: max-content;
+      }
+
+
+      #waffle-dropdown-menu-2{
+        z-index: 1
+      }
+
+      #bar-dropdown-menu-2{
+        z-index: 1
+      }
+
+      .loading{
+        height: 500px;
+        text-align: center;
+        line-height: 500px;
+      }
+
+
+  </style>
+</head>
+<body>
+  <section class="hero is-fullheight">
+    <!-- header  -->
+    <section class="hero is-dark is-small">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title is-1">
+            Student Content?
+          </h1>
+          <h2 class="subtitle is-4">
+            Isa Sebrechts & Yasmine Bogaert
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-2">Overzicht</h1>
+        <div class="content is-size-5">
+          <p>
+          Deze pagina en de bijhorende visualisaties zijn gemaakt in functie van het vak Datavisualisatie, gegeven door Bart Mesuere. In dit vak kregen we de opdracht om een dataset te kiezen en die te visualizeren. Wij hebben gekozen voor data over het mentaal welzijn van de studenten op de UGent.
+          </p>
+          <p>
+          In januari deed de Gentse Studentenraad onderzoek naar het <b>mentaal welbevinden</b> van de studenten aan de Universiteit Gent met als doel om gerichte informatie te geven aan de verschillende faculteiten zodat zij hier verder mee aan de slag kunnen. Daarnaast kunnen grotere problemen ook aangekaart worden hogerop.
+          </p>
+          <p>
+          Met onze visualisaties proberen we hier een beter overzicht van te geven zodat deze data makkelijker te interpreteren wordt.
+          </p>
+        </div>
+      </div>
+
+
+
+      <div class="container" style="margin-top: 30px;">
+        <nav class="level is-mobile">
+          <div class="level-left">
+            <div class="level-item has-text-centered ">
+              <div>
+                <p class="heading">Deelnemers</p>
+                <p class="title" id="participants"></p>
+              </div>
+            </div>
+            <div class="level-item has-text-centered">
+              <div>
+                <p class="heading">Faculteiten</p>
+                <p class="title" id="faculties"></p>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <div class="container">
+        <div class="content is-size-5">
+          <p>
+          In totaal namen <b>4384</b> studenten deel aan de enqu&ecirc;te verspreid over <b>11</b> faculteiten. De enqu&ecirc;te was het populairst bij de faculteit Geneeskunde en Gezondheidswetenschappen, met <b>737</b> deelnemers. De faculteit Farmaceutische Wetenschappen had de minste deelnemers, slechts <b>141</b>.
+          </p>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="title is-4"> Deelnemers over de faculteiten heen </div>
+        <div class="columns">
+          <div class="column is-one-half">
+            <div id="overviewwaffle"> </div>
+          </div>
+          <div class="column is one-half">
+            <div id="overviewwaffle_legend"> </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Radar Chart Section -->
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-2">Radar Chart</h1>
+        <div class="content is-size-5">
+          <p>
+            Met een Radar Chart kunnen we in &eacute;&eacute;n oogopslag vergelijken hoe de verschillende faculteiten scoren op bepaalde gebieden. We kunnen de absolute waarden (vari&euml;rend tussen 1 (nooit) en 5 (heel vaak)) met elkaar vergelijken, maar deze liggen over het algemeen dicht bij elkaar en maken het moeilijk om de verschillen te zien. Daarom hebben we gekozen voor een optie die de waarden normaliseert en relatief toont tenopzichte van elkaar. Ook het UGent gemiddelde, waar tegenover werd genormaliseerd, wordt weergegeven.
+          </p>
+          <p>
+          Zo zien we bijvoorbeeld een veel <b>groter gebrek aan toekomstperspectieven</b> in de Faculteit Letteren en Wijsbegeerte dan bij de Faculteit Ingenieurswetenschappen en Architectuur.
+          </p>
+
+
+        </div>
+      </div>
+      <div class="container">
+        <div class="columns">
+          <div class="column is-two-thirds has-text-centered" style="height: 672px">
+            <button class="button is-active" id="button_abs_rel">absolute</button>
+            <div class="radarChart">
+              <div class="loading">
+                <div class="fa-3x">
+                  <i class="fas fa-spinner fa-pulse"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column is-one-third" style="display:flex; flex-direction:column; justify-content: center">
+            <div id="legend"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Waffle Chart Section -->
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-2">Waffle Charts</h1>
+        <div class="content is-size-5">
+          <p>
+            Vaak worden voor dit soort enqu&ecirc;tes gebruik gemaakt van eenvoudige pie charts. Wij hebben echter gekozen voor meer aantrekkelijkere Waffle Charts. E;&eacute;n vierkantje komt hierbij overeen met <b>1%</b>.
+          </p>
+          <p>
+            Je kan op deze manier door alle vragen van de enqu&ecirc;te bladeren en de resultaten voor de <b>hele universiteit</b> en <b>per faculteit</b> bekijken.
+          </p>
+        </div>
+      </div>
+
+
+
+      <!-- Waffle Question Button -->
+      <div class="container">
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div class="dropdown" id="waffle-dropdown-1">
+
+                <div class="dropdown-trigger">
+                  <button class="button is-active" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span>Vraag</span>
+                    <span class="icon is-small">
+                      <i class="fas fa-angle-down" id="waffle-dropdownicon-1" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+
+                <div class="dropdown-menu" id="waffle-dropdown-menu1" role="menu">
+                  <div class="dropdown-content" id="waffle-dropdown-content-1">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="level-item">
+              <div class="subtitle is-5 has-text-grey-dark" id="waffle-question-title">
+                Selecteer een vraag
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- Waffle Subuestion Button -->
+      <div class="container">
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div class="dropdown" id="waffle-dropdown-2">
+
+                <div class="dropdown-trigger">
+                  <button class="button is-active" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span>Subvraag</span>
+                    <span class="icon is-small">
+                      <i class="fas fa-angle-down" id="waffle-dropdownicon-2" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+
+                <div class="dropdown-menu" id="waffle-dropdown-menu-2" role="menu">
+                  <div class="dropdown-content" id="waffle-dropdown-content-2">
+                    <div class="dropdown-item">
+                      Kies eerst een vraag.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="level-item">
+              <div class="subtitle is-5 has-text-grey-dark" id="waffle-subquestion-title">
+                Selecteer een subvraag.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- Overall Waffle Legend + Title -->
+      <div class="container">
+        <div id="wafflelegend"> </div>
+      </div>
+
+      <!-- Multiple WaffleCharts -->
+      <div class="container">
+        <div class="columns is-multiline" id="wafflecharts">
+          <div class="column is-one-quarter">
+            <div id="title" style="height: 50px">
+              <img src="logos/logo_UGent.svg"> </img>
+            </div>
+            <div id="total_UGent"></div>
+            <div id="waffle_UGent"></div>
+            <div id="wafflelegend_UGent"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Stacked BarChart Section -->
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-2">Stacked Bar Chart</h1>
+        <div class="content is-size-5">
+          <p>
+            Onderstaande Barcharts geven dezelfde data weer als hierboven. Deze Barcharts hebben echter een hoogte afhankelijk van het aantal deelnemers per faculteit, wat een beter beeld geeft over de absolute waarden van de antwoorden. Om toch ook rechtstreeks te kunnen vergelijken met de relatieve waarden, hebben we ook een toggle-button toegevoegd die de Bar Chart aanpast van absolute naar relatieve vorm.
+          </p>
+          <p>
+            We zien nu ook heel duidelijk dat er aan de UGent een grote instroom van buiten Belgi&#235; is in de <b> Faculteit Diergeneeskunde</b> (zie: Background Info &#8594; Belgische nationaliteit). Dit is waarschijnlijk toe te wijten aan het feit dat er in Belgi&#235; geen toegangsexamen is voor deze opleiding terwijl dit in onze buurlanden vaak wel het geval is.
+          </p>
+          <p>
+            Je kan opnieuw door alle vragen bladeren om de antwoorden <b> per faculteit </b> te bekijken.
+          </p>
+        </div>
+      </div>
+
+      <!-- Question Button -->
+      <div class="container">
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div class="dropdown" id="bar-dropdown-1">
+
+                <div class="dropdown-trigger">
+                  <button class="button is-active" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span>Vraag</span>
+                    <span class="icon is-small">
+                      <i class="fas fa-angle-down" id="bar-dropdownicon-1" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+
+                <div class="dropdown-menu" id="bar-dropdown-menu1" role="menu">
+                  <div class="dropdown-content" id="bar-dropdown-content-1">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="level-item">
+              <div class="subtitle is-5 has-text-grey-dark" id="bar-question-title">
+                Selecteer een vraag
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      <!-- Subquestion Button -->
+      <div class="container">
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div class="dropdown" id="bar-dropdown-2">
+
+                <div class="dropdown-trigger">
+                  <button class="button is-active" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span>Subvraag</span>
+                    <span class="icon is-small">
+                      <i class="fas fa-angle-down" id="bar-dropdownicon-2" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+
+                <div class="dropdown-menu" id="bar-dropdown-menu-2" role="menu">
+                  <div class="dropdown-content" id="bar-dropdown-content-2">
+                    <div class="dropdown-item">
+                      Kies eerst een vraag.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="level-item">
+              <div class="subtitle is-5 has-text-grey-dark" id="bar-subquestion-title">
+                Selecteer een subvraag.
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+      <div class="container">
+        <div class = "columns">
+
+          <div class="column is-three-quarters">
+            <div class='stack'></div>
+          </div>
+          <div class="column is-one-quarter">
+
+              <a class="button is-active" id="bar-switch-button">absolute</a>
+
+            <div id="barlegend"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Correlation grid Section -->
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-2">Correlatiematrix</h1>
+        <div class="content is-size-5">
+          <p>
+            Met een <b>correlatiematrix</b> kunnen we de correlaties tussen verschillende vragen zichtbaar maken. De intensiteit van de kleuren geeft aan hoe sterk de antwoorden gecorreleerd zijn, waarbij <b style="color:steelblue">blauw</b> wijst op een positieve correlatie, en <b style="color:tomato"> rood </b> op een negatieve. De resultaten van de enqu&#234;te worden gesterkt door de aanwezigheid van hoge correlaties tussen gelijkaardige antwoorden. Enkele interessante bevindingen werden reeds omlijnd.
+          </p> <p>Beweeg over een vakje om de vragen en de correlatiewaarde te zien.</p>
+
+        </div>
+      </div>
+      <div class="container">
+        <div class="columns">
+          <div class="column is-one-quarter"  style="margin-top:100px">
+            <div id="zoom"></div>
+            <div>
+              <b>x</b>
+              <span id="zoom_q1">vraag 1</span>
+            </div>
+            <div>
+              <b>y</b>
+              <span id="zoom_q2">vraag 2</span>
+            </div>
+            <div id="zoom_interesting"></div>
+          </div>
+        <div class="column is-three-quarters">
+            <div id="grid-legend"></div>
+            <div id="grid">
+              <div class="loading">
+                <div class="fa-3x">
+                  <i class="fas fa-spinner fa-pulse"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+    <div class="hero-foot is-small">
+      <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+            Made with <i class="fas fa-heart fa-xs" style="color: #e25555;"></i>  by Isa Sebrechts & Yasmine Bogaert.
+          </p>
+          <p>
+            View on <a href="https://github.ugent.be/isebrech/Studentcontent">Github</a> <i class="fab fa-github"></i>.
+          </p>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+  <script src="radarChart.js"></script>
+  <script src="waffleChart.js"></script>
+  <script src="correlationMatrix.js"></script>
+  <script src="stackedBarChart.js"></script>
+  <script>
+
+  //##### Overview #####
+
+    d3.select("#participants").text("4384");
+    d3.select("#faculties").text("11");
+
+
+
+
+
+  //##### Radar Chart #####
+  /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
+  var faculties_copy = JSON.parse(JSON.stringify(faculties)) // deep copy (JSON parsing is apparently the fastest way)
+
+
+  //////////////////////////////////////////////////////////////
+  //////////////////////// Set-Up //////////////////////////////
+  //////////////////////////////////////////////////////////////
+
+  var margin = { top: 100, right: 100, bottom: 100, left: 100 },
+  width =
+  Math.min(600, window.innerWidth - 10) - margin.left - margin.right,
+  height = Math.min(
+    width,
+    window.innerHeight - margin.top - margin.bottom - 20
+  );
+
+  let aggregated_data = [];
+
+  //////////////////////////////////////////////////////////////
+  ////////////////////  Format Radar Data    ///////////////////
+  //////////////////////////////////////////////////////////////
+
+  $.getJSON('question_counts.json', function(data) {
+    data = {
+    "stress": data.Mijn_opleiding_brengt_veel_stress_met_zich_mee,
+    "studiedruk": data.De_huidige_studiedruk_heeft_een_negatief_effect_op_mijn_mentaal_welbevinden,
+    "depressieve gedachten": data.Depressieve_gedachten_gehad,
+    "uitstelgedrag": data.Last_van_uitstelgedrag_gehad,
+    "gebrek aan toekomstperspectieven": data.Ik_maak_me_zorgen_over_de_toekomstperspectieven_die_mijn_dimploma_me_zal_bieden,
+    "eenzaamheid": data.Ik_ben_eenzaam,
+    "negatieve invloed UGent": data.De_manier_waarop_onderwijsactiviteiten_georganiseerd_worden,
+    "zelfmoordgedachten": data.Zelfmoordgedachten_gehad_
+  }
+
+    let axes = Object.keys(data);
+    let values = [1,2,3,4,5];
+
+    /*Format UGent data first*/
+    let ugent_data_formatted = [];
+
+    axes.forEach(axis => {
+      let axis_sum = 0;
+      let axis_count = 0;
+      faculties_copy.map(f => f.name).forEach(fac => {
+        let fac_data = data[axis][fac];
+        values.forEach(i => {
+          let count = parseInt(fac_data[i]);
+          if(count){
+            axis_sum += count * i;
+            axis_count += count;
+          }
+        });
+      })
+
+      let axis_value = axis_sum / axis_count;
+
+      ugent_data_formatted.push({
+        axis: axis,
+        value: axis_sum / axis_count,
+        relative_value: 1,
+        fac: "UGent",
+      });
+    });
+    aggregated_data.push(ugent_data_formatted);
+
+    /*Format Faculty data*/
+    faculties_copy.map(f => f.name).forEach(fac => {
+      fac_data_formatted = [];
+
+      axes.forEach(axis => {
+        let axis_sum = 0;
+        let axis_count = 0;
+        let axis_data = data[axis][fac];
+        values.forEach(i => {
+          let count = parseInt(axis_data[i]);
+          if(count){
+            axis_sum += count * i;
+            axis_count += count;
+          }
+        })
+
+        let axis_value = axis_sum / axis_count;
+
+        let ugent_axis_value = ugent_data_formatted.filter(entry => entry.axis === axis)[0].value;
+
+        fac_data_formatted.push({
+          axis: axis,
+          value: axis_value,
+          relative_value: axis_value / ugent_axis_value,
+          fac: fac,
+          data: axis_data
+        })
+      });
+      aggregated_data.push(fac_data_formatted);
+    });
+
+    faculties_copy.unshift({
+      name: "UGent",
+      color: "#1E64C8",
+      icon: "icons/icon_ugent.svg",
+      logo: "icons/icon_ugent.svg"
+    });
+
+
+    //////////////////////////////////////////////////////////////
+    //////////////////// Draw the Radar Chart ////////////////////
+    //////////////////////////////////////////////////////////////
+
+    var colorTable = {};
+    faculties_copy.forEach(f => {
+      colorTable[f.name] = f.color;
+    });
+
+    var color = colorTable;
+    var radarChartOptions = {
+      w: width,
+      h: height,
+      margin: margin,
+      maxValue: 1,
+      levels: 4,
+      roundStrokes: true,
+      color: color,
+      relative: false
+    };
+    //Call function to draw the Radar chart
+    RadarChart(
+      ".radarChart",
+      aggregated_data,
+      radarChartOptions,
+      faculties_copy
+    );
+
+    //set button to toggle absolute / relative data mode
+
+    d3.select("#button_abs_rel")
+    .text(radarChartOptions.relative ? "relative" : "absolute")
+    .on("click", () => toggleRelative());
+
+    function toggleRelative() {
+      radarChartOptions.relative = !radarChartOptions.relative;
+      RadarChart(
+        ".radarChart",
+        aggregated_data,
+        radarChartOptions,
+        faculties_copy
+      );
+      d3.select("button")
+      .text(radarChartOptions.relative ? "relative" : "absolute")
+      .on("click", () => toggleRelative());
+    }
+  });
+
+  //##### Waffle Chart #####
+
+  //## Dropdowns ##
+
+  // fill first dropdown
+  $.each(Object.keys(questions_separated), function(i, q){
+    $("#waffle-dropdown-content-1").append(`
+    <a class="dropdown-item waffle-question" id="` + i + `">
+      ` + question_translations[q.replace(/_/g," ")] + `
+    </a>`
+    )
+  });
+
+
+  // open dropdowns on click
+  var dropdowns = document.querySelectorAll('.dropdown');
+  dropdowns.forEach(function(dropdown){
+    dropdown.addEventListener('click', function(event) {
+      dropdown.classList.toggle('is-active');
+    });
+  })
+
+  // clear second dropdown when selecting in first dropdown
+  var waffledropdown1 = document.querySelector('#waffle-dropdown-1');
+  var waffledropdown2 = document.querySelector('#waffle-dropdown-2');
+  waffledropdown1.addEventListener('click', function(event){
+    if (waffledropdown2.classList.contains("is-active")){
+      waffledropdown2.classList.remove("is-active");
+    }
+  })
+
+  // clear second dropdown when selecting in first dropdown
+  var bardropdown1 = document.querySelector('#bar-dropdown-1');
+  var bardropdown2 = document.querySelector('#bar-dropdown-2');
+  bardropdown1.addEventListener('click', function(event){
+    if (bardropdown2.classList.contains("is-active")){
+      bardropdown2.classList.remove("is-active");
+    }
+  })
+
+
+  var filter_questions = ["fac", "leeftijd", "geaardheid", "verblijfplaats", "opleiding"];
+  var waffle_dropdownitems1 = document.querySelectorAll(".waffle-question");
+  waffle_dropdownitems1.forEach(function(dropdownitem) {
+    // add addEventListeners to elements of first dropdown
+    dropdownitem.addEventListener('click', function(event) {
+      waffle_question = Object.keys(questions_separated)[event.srcElement.id];
+      $("#waffle-question-title").text(question_translations[waffle_question.replace(/_/g, " ")]);
+      $("#waffle-subquestion-title").html("");
+      clear_element("wafflelegend")
+      draw_stub_waffleCharts();
+
+      // fill second dropdown
+      $('#waffle-dropdown-content-2').html("");
+      questions_separated[waffle_question].forEach(function(q, i){
+        if(!(filter_questions.indexOf(q) > -1 )){
+          q = q.replace(/_/g," ");
+          if(waffle_question in subquestion_translations){
+            var text = subquestion_translations[waffle_question][q];
+          } else {
+            var text = q;
+          }
+          $("#waffle-dropdown-content-2").append(`
+          <a class="dropdown-item waffle-subquestion" id="` + i + `">
+            ` + text + `
+          </a>`)
+        }
+      })
+
+
+      var waffle_dropdownitems2 = document.querySelectorAll(".waffle-subquestion");
+      waffle_dropdownitems2.forEach(function(dropdownitem){
+        // add addEventListeners to elements of first dropdown
+        dropdownitem.addEventListener('click', function(event) {
+          waffle_subquestion = questions_separated[waffle_question][event.srcElement.id];
+          subq = waffle_subquestion.replace(/_/g, " ")
+          if(waffle_question in subquestion_translations){
+            var text = subquestion_translations[waffle_question][subq];
+          } else {
+            var text = subq;
+          }
+          $("#waffle-subquestion-title").text(text);
+          draw_waffleCharts(waffle_question, waffle_subquestion);
+        });
+      });
+    })
+  });
+
+
+
+
+
+
+  //## Query Data ##
+
+  // get question results for university
+  function results_total(question){
+    return new Promise(function(resolve, reject){
+
+      d3.csv("/nl_data.csv", function(d) {
+        return {
+          fac: d.fac,
+          response: d[question]
+        };
+      }).then(function(data) {
+        var results = {};
+        data.forEach(d => {
+          if (d.response in results){
+            results[d.response] += 1;
+          } else {
+            results[d.response] = 1;
+          }
+        });
+        delete results["#N/A"];
+
+        var results = Object.keys(results).map(function(r){
+          return { text: r, count: results[r]};
+        })
+        dataArray = results.sort((a, b) => a.text.localeCompare(b.text));
+        dataArray = results;
+        total = d3.sum(dataArray, f => f.count);
+
+        resolve ({
+          total: total,
+          data: dataArray
+        })
+
+      });
+
+    });
+  }
+
+  // get question results for a faculty
+  function results_per_faculty(question, faculty){
+    return new Promise(function(resolve, reject){
+      d3.csv("/nl_data.csv", function(d) {
+        return {
+          fac: d.fac,
+          response: d[question]
+        };
+      }).then(function(data) {
+        var results = {};
+        data.forEach(d => {
+          if(d.fac == faculty){
+            if (d.response in results){
+              results[d.response] += 1;
+            } else {
+              results[d.response] = 1;
+            }
+          }
+        });
+        delete results["#N/A"];
+
+        var results = Object.keys(results).map(function(r){
+          return { text: r, count: results[r]};
+        })
+        dataArray = results.sort((a, b) => a.text.localeCompare(b.text));
+        dataArray = results;
+        total = d3.sum(dataArray, f => f.count);
+
+        resolve ({
+          total: total,
+          data: dataArray
+        })
+
+      });
+
+    });
+  }
+
+  //## Draw WaffleCharts ##
+
+  // append wafflechart placeholder divs
+  $.each(faculties, function(i, f){ //name, color, icon
+    $("#wafflecharts").append(`
+    <div class="column is-one-quarter">
+      <div id="title" style="height: `+ (i<3?"50":"30")+`px">
+        <img src="` + f.logo + `"> </img>
+      </div>
+      <div id="total_`+ f.name.replace(/ /g,"_") +`"></div>
+      <div id="waffle_`+ f.name.replace(/ /g,"_")  +`"></div>
+      <div id="wafflelegend_`+ f.name.replace(/ /g,"_")  +`"></div>
+    </div>`
+
+    )
+  })
+
+  function translateNumbers(parentquestion, numbers){
+    if (parentquestion in numbertranslations) {
+      return numbers.map(d => numbertranslations[parentquestion][d]);
+    } else {
+      return numbers
+    }
+  }
+
+
+  // draw total + faculty wafflecharts, and question title
+  function draw_waffleCharts(parentquestion, question){
+    $.getJSON('question_counts.json', function(data) {
+      let colors_ = {};
+      // format data
+      const question_data = data[question];
+      const keys = Object.keys(question_data);
+      var data = {}
+      for(i = 0; i < keys.length; i++){
+        var key = keys[i];
+        if(key != "#N/A"){
+          var counts = question_data[key];
+          var counts = Object.keys(counts).reduce(function (filtered, key) {
+              if (key != "#N/A") filtered[key] = counts[key];
+              return filtered;
+          }, {});
+          var list = []
+          var answers = Object.keys(counts);
+          for(j = 0; j < answers.length; j++){
+            var answer = answers[j];
+            list.push({"text": answer, "count": counts[answer]});
+          }
+
+          data[key] = list;
+        }
+      }
+
+      // draw legend
+      var legend_data = translateNumbers(parentquestion, answers);
+      if(!isNaN(answers[0])){
+        var n_labels= legend_data.length;
+        colorLinear = d3.scaleLinear()
+                .domain([0,2, n_labels])
+                .range(['#d73027', '#fee08b', '#1a9850'])
+                .interpolate(d3.interpolateHcl); //interpolateHsl interpolateHcl interpolateRgb
+        legend_data.forEach(function(d,i){
+          colors_[d] = colorLinear(i);
+        })
+      } else {
+        colorOrdinal = d3.scaleOrdinal().range(d3.schemeCategory10);
+        legend_data.forEach(function(d,i){
+          colors_[d] = colorOrdinal(i);
+        })
+      }
+      VerticalLegend(legend_data, "wafflelegend", colors_);
+
+      // draw wafflecharts for UGent + faculties
+      for(fac in data){
+        var fac_data = data[fac];
+
+        var total = 0;
+        for(key_t in fac_data){
+          total += fac_data[key_t].count
+        }
+        if(!isNaN(answers[0])){
+          var n_labels= fac_data.length;
+          colorLinear = d3.scaleLinear()
+                  .domain([0,2, n_labels])
+                  .range(['#d73027', '#fee08b', '#1a9850'])
+                  .interpolate(d3.interpolateHcl); //interpolateHsl interpolateHcl interpolateRgb
+          fac_data.forEach(function(d,i){
+            colors_[d.text] = colorLinear(i);
+          })
+        } else {
+          colorOrdinal = d3.scaleOrdinal().range(d3.schemeCategory10);
+          fac_data.forEach(function(d,i){
+            colors_[d] = colorOrdinal(i);
+          })
+        }
+
+        WaffleChart(fac_data.sort((a, b) => a.text.localeCompare(b.text)), total, "total_"+fac.replace(/ /g,"_"), "waffle_" + fac.replace(/ /g,"_"), colors_, sort=false, squareSize=15);
+      }
+
+
+    });
+  }
+
+  //#### Introduction waffle ####
+  $.getJSON('question_counts.json', function(data) {
+    const question = "fac";
+    const question_data = data[question];
+    const keys = Object.keys(question_data);
+    var data = []
+    var total = 0
+    for(i = 0; i < keys.length; i++){
+      var key = keys[i];
+      if(key != "#N/A" && key != "UGent"){
+        var counts = question_data[key];
+        var counts = Object.keys(counts).reduce(function (filtered, key) {
+            if (key != "#N/A") filtered[key] = counts[key];
+            return filtered;
+        }, {});
+
+        data.push({"text": key, "count": counts[key]});
+        total += counts[key];
+      }
+    }
+    let colors_ = {};
+    data.forEach(function(d,i){
+      colors_[d.text] = faculties_copy.filter(f => f.name === d.text)[0].color;
+    })
+      WaffleChart(data, total, "_", "overviewwaffle", colors_, sort=true, squareSize=20);
+      //TODO: fix to VerticalLegend
+      WaffleLegend(data, "overviewwaffle_legend", colors_);
+  });
+
+
+  function draw_stub_waffleCharts(){
+    var stub_data = [{text: 1, count: 1, units: 100}]
+    colors = {1: "#DCDCDC"};
+    WaffleChart(stub_data, 1, )
+    WaffleChart(stub_data, 1, "total_UGent", "waffle_UGent", colors, sort=false, squareSize=15);
+    faculties.forEach(function(faculty, i){
+        WaffleChart(stub_data, 1, "total_"+faculty.name.replace(/ /g, "_"), "waffle_" + faculty.name.replace(/ /g, "_"), colors, sort=false, squareSize=15);
+    })
+  }
+  draw_stub_waffleCharts();
+
+
+
+
+
+  //#### Stacked BarChart #####
+
+    var barchartOptions = {
+        data : undefined,
+        colors : undefined,
+        absolute: true,
+    }
+
+    function draw_stub_stackedBarCharts(){
+      console.log("stub stackedBarCharts");
+      get_stubdata_stackedBarCharts().then(function(stubdata){
+        barchartOptions.data = stubdata.data;
+        barchartOptions.colors = stubdata.colors;
+        stackedBarChart(barchartOptions.data, barchartOptions.colors, barchartOptions.absolute)
+      });
+    }
+    draw_stub_stackedBarCharts();
+
+
+
+    d3.select("#bar-switch-button")
+    .text(barchartOptions.absolute ? "absolute" : "relative")
+    .on("click", () => toggleRelativeBarChart());
+
+    function toggleRelativeBarChart(){
+      console.log(barchartOptions)
+      barchartOptions.absolute = !barchartOptions.absolute;
+      stackedBarChart(barchartOptions.data, barchartOptions.colors, barchartOptions.absolute);
+      d3.select("#bar-switch-button")
+      .text(barchartOptions.absolute ? "absolute" : "relative")
+    }
+
+    // fill first dropdown
+    $.each(Object.keys(questions_separated), function(i, q){
+      $("#bar-dropdown-content-1").append(`
+      <a class="dropdown-item bar-question" id="` + i + `">
+        ` + question_translations[q.replace(/_/g," ")] + `
+      </a>`
+      )
+    });
+
+    var filter_questions = ["fac", "leeftijd", "geaardheid", "verblijfplaats", "opleiding"];
+    var bar_dropdownitems1 = document.querySelectorAll(".bar-question");
+    bar_dropdownitems1.forEach(function(dropdownitem) {
+      // add addEventListeners to elements of first dropdown
+      dropdownitem.addEventListener('click', function(event) {
+        bar_question = Object.keys(questions_separated)[event.srcElement.id];
+        $("#bar-question-title").text(question_translations[bar_question.replace(/_/g, " ")]);
+        $("#bar-subquestion-title").html("");
+        clear_element("barlegend");
+        var stubdata =
+        draw_stub_stackedBarCharts();
+
+        // fill second dropdown
+        $('#bar-dropdown-content-2').html("");
+        questions_separated[bar_question].forEach(function(q, i){
+          if(!(filter_questions.indexOf(q) > -1)){
+            q = q.replace(/_/g," ");
+            if(bar_question in subquestion_translations){
+              var text = subquestion_translations[bar_question][q];
+            } else {
+              var text = q;
+            }
+            $("#bar-dropdown-content-2").append(`
+            <a class="dropdown-item bar-subquestion" id="` + i + `">
+              ` + text + `
+            </a>`)
+          }
+        })
+
+
+        var bar_dropdownitems2 = document.querySelectorAll(".bar-subquestion");
+        bar_dropdownitems2.forEach(function(dropdownitem){
+          // add addEventListeners to elements of first dropdown
+            dropdownitem.addEventListener('click', function(event) {
+            bar_subquestion = questions_separated[bar_question][event.srcElement.id];
+            subq = bar_subquestion.replace(/_/g, " ")
+            if(bar_question in subquestion_translations){
+              var text = subquestion_translations[bar_question][subq];
+            } else {
+              var text = subq;
+            }
+            $("#bar-subquestion-title").text(text);
+            get_stackedBarChart_data(bar_question, bar_subquestion).then(function(real_data){
+              barchartOptions.data = real_data.data;
+              barchartOptions.colors = real_data.colors;
+              stackedBarChart(barchartOptions.data, barchartOptions.colors, barchartOptions.absolute);
+            })
+          });
+        });
+      })
+    });
+
+    function get_stackedBarChart_data(parentquestion, question){
+      return new Promise(function(resolve, reject){
+        $.getJSON('question_counts.json', function(data) {
+          const question_data = data[question];
+          const keys = Object.keys(question_data);
+          var data = []
+          var ugent_legend_keys;
+          for(i = 0; i < keys.length; i++){
+            var key = keys[i];
+            if(key == "UGent"){
+              var counts = question_data[key];
+              var counts = Object.keys(counts).reduce(function (filtered, key) {
+                  if (key != "#N/A") filtered[key] = counts[key];
+                  return filtered;
+              }, {});
+              ugent_legend_keys = (counts);
+            } else if(key != "#N/A"){
+              var counts = question_data[key];
+              var counts = Object.keys(counts).reduce(function (filtered, key) {
+                  if (key != "#N/A") filtered[key] = counts[key];
+                  return filtered;
+              }, {});
+              data.push({"name": key, "counts": sort_dict(counts)});
+            }
+          }
+
+          var legend_keys = Object.keys(ugent_legend_keys);//Object.keys(data[0].counts);
+          var legend_data = translateNumbers(parentquestion, legend_keys);
+
+          let colors_ = {};
+          if(!isNaN(legend_keys[0])){  // linear   scale for 1-5 answers
+            var n_labels= legend_data.length;
+            colorLinear = d3.scaleLinear()
+                    .domain([0,2, n_labels])
+                    .range(['#d73027', '#fee08b', '#1a9850'])
+                    .interpolate(d3.interpolateHcl); //interpolateHsl interpolateHcl interpolateRgb
+            legend_data.forEach(function(d,i){
+              colors_[d] = colorLinear(i);
+            })
+            VerticalLegend(legend_data.reverse(), "barlegend", colors_);
+            legend_keys.forEach(function(d,i){
+              colors_[d] = colorLinear(i);
+            })
+          } else { // ordinal scale for categorical answers
+            colorOrdinal = d3.scaleOrdinal().range(d3.schemeCategory10);
+            legend_data.forEach(function(d,i){
+              colors_[d] = colorOrdinal(i);
+            })
+            VerticalLegend(legend_data.reverse(), "barlegend", colors_);
+            legend_keys.reverse().forEach(function(d,i){
+              colors_[d] = colorOrdinal(i);
+            })
+          }
+          resolve({
+              data: data,
+              colors: colors_
+          });
+          //stackedBarChart(data, colors_);
+        });
+      });
+    }
+
+    function sort_dict(dict) {
+      var sorted = [];
+      for(var key in dict) {
+          sorted[sorted.length] = key;
+      }
+      sorted.sort();
+
+      var tempDict = {};
+      for(var i = 0; i < sorted.length; i++) {
+          tempDict[sorted[i]] = dict[sorted[i]];
+      }
+
+      return tempDict;
+    }
+
+    //draw_stub_stackedBarCharts();
+
+    function get_stubdata_stackedBarCharts(){
+      // initial BarChart with stubdata
+      return new Promise(function(resolve, reject){
+        $.getJSON('question_counts.json', function(data) {
+          const question = "fac";
+          const question_data = data[question];
+          const keys = Object.keys(question_data);
+          var data = []
+          var total = 0
+          for(i = 0; i < keys.length; i++){
+            var key = keys[i];
+            if(key != "#N/A" && key != "UGent"){
+              var counts = question_data[key];
+              var counts = Object.keys(counts).reduce(function (filtered, key) {
+                  if (key != "#N/A") filtered[key] = counts[key];
+                  return filtered;
+              }, {});
+
+              data.push({"name": key, "counts": {_: counts[key]}});
+            }
+          }
+          resolve ({
+            data: data,
+            colors: {_ : "#DCDCDC"}
+          });
+        });
+      });
+    }
+
+    function clear_element(id){
+      $("#"+id).html("");
+    }
+
+
+  //#### Correlation Matrix ####
+  CorrelationMatrix();
+  </script>
+
+</body>
+</html>
